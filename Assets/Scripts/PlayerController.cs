@@ -15,7 +15,8 @@ public class PlayerController : MonoBehaviour
     private Animator playerAnim;         // Reference to the animator
 
     private List<CatMovement> followingCats = new List<CatMovement>(); // List of cats that are following the player
-    
+    public ScoreManager scoreManager;    // Reference to ScoreManager
+
     void Start()
     {
         // Get the CharacterController component
@@ -67,7 +68,7 @@ public class PlayerController : MonoBehaviour
         playerCamera.transform.localRotation = Quaternion.Euler(rotX, 0f, 0f);
     }
 
-    // New function to handle cat pickup and follow behavior
+    // Handle cat pickup and follow behavior
     void HandleCatPickup()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -83,6 +84,29 @@ public class PlayerController : MonoBehaviour
                     followingCats.Add(cat);
                     cat.StartFollowing(followingCats.Count);  // Pass the index in the line
                 }
+            }
+        }
+    }
+
+    // Handle collision with the door to make cats disappear and increment score
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("GardenDoor"))
+        {
+            int catsDisappeared = followingCats.Count;  // Number of cats following the player
+
+            foreach (CatMovement cat in followingCats)
+            {
+                Destroy(cat.gameObject); // Remove the cat from the game
+                
+            }
+
+            followingCats.Clear(); // Clear the list of following cats
+
+            // Update the score based on how many cats disappeared
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(catsDisappeared);
             }
         }
     }

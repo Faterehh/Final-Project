@@ -17,7 +17,7 @@ public class CatMovement : MonoBehaviour
     // Follow related variables
     private bool isFollowing = false;   // To check if the cat is following the player
     private int followIndex = 0;        // To set the order of the following cats
-    public float followGap = 1.5f;      // Gap between the cats when following the player
+    public float followGap = .5f;      // Gap between the cats when following the player
 
     private void Start()
     {
