@@ -14,6 +14,11 @@ public class CatMovement : MonoBehaviour
     private Quaternion targetRotation;  // Target rotation for smooth turning
     public GameObject player;
 
+    // Follow related variables
+    private bool isFollowing = false;   // To check if the cat is following the player
+    private int followIndex = 0;        // To set the order of the following cats
+    public float followGap = 1.5f;      // Gap between the cats when following the player
+
     private void Start()
     {
         // Set the initial target position for the cat
@@ -24,16 +29,25 @@ public class CatMovement : MonoBehaviour
 
     private void Update()
     {
-        // Move the cat towards the target position
-        MoveToTarget();
-
-        // Count down the timer and change direction if it reaches zero
-        timer -= Time.deltaTime;
-        if (timer <= 0)
+        if (!isFollowing)
         {
-            SetNewTargetPosition(); // Change the target position
-            timer = changeDirectionTime; // Reset the timer
+            // Move the cat towards the target position
+            MoveToTarget();
+
+            // Count down the timer and change direction if it reaches zero
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                SetNewTargetPosition(); // Change the target position
+                timer = changeDirectionTime; // Reset the timer
+            }
         }
+        else
+        {
+            FollowPlayer();
+        }
+        
+        CheckForCatPickup();
     }
 
     private void MoveToTarget()
@@ -52,7 +66,6 @@ public class CatMovement : MonoBehaviour
             // Move the cat towards the target position
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
         }
-        CheckForCatPickup();
     }
 
     private void SetNewTargetPosition()
@@ -65,18 +78,46 @@ public class CatMovement : MonoBehaviour
         );
     }
 
-    // When the cat collides with something, change its direction
     private void OnCollisionEnter(Collision collision)
     {
         // When the cat collides with an object, set a new random direction
         SetNewTargetPosition();
     }
-        void CheckForCatPickup(){
-        if((player.gameObject.transform.position - gameObject.transform.position).magnitude < 1 ){
+
+    void CheckForCatPickup()
+    {
+        // Check the distance between the player and the cat
+        if((player.gameObject.transform.position - gameObject.transform.position).magnitude < 1)
+        {
+            // Highlight the cat if it's within pickup range
             gameObject.GetComponent<Outline>().enabled = true;
-        } else{
+        }
+        else
+        {
             gameObject.GetComponent<Outline>().enabled = false;
         }
-        
+    }
+
+    // New function to start following the player
+    public void StartFollowing(int index)
+    {
+        isFollowing = true;
+        followIndex = index;
+    }
+
+    // Make the cat follow the player
+    private void FollowPlayer()
+    {
+        if (player != null)
+        {
+            // Calculate the position behind the player with a gap based on followIndex
+            Vector3 followPosition = player.transform.position - player.transform.forward * followGap * followIndex;
+
+            // Move smoothly towards the follow position
+            transform.position = Vector3.Lerp(transform.position, followPosition, moveSpeed * Time.deltaTime);
+
+            // Rotate to face the same direction as the player
+            transform.rotation = Quaternion.Slerp(transform.rotation, player.transform.rotation, rotationSpeed * Time.deltaTime);
+        }
     }
 }

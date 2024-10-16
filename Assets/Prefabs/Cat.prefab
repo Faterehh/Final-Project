@@ -116,6 +116,10 @@ MonoBehaviour:
   moveSpeed: 2
   patrolRange: 5
   changeDirectionTime: 2
+  rotationSpeed: 5
+  followGap: 1.5
+  player: {fileID: 0}
+  isInGarden: 0
 --- !u!54 &2926140280334218634
 Rigidbody:
   m_ObjectHideFlags: 0

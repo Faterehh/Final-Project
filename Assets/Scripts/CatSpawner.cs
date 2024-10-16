@@ -6,7 +6,7 @@ public class CatSpawner : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject catPrefab; // Reference to the cat prefab
-
+    public List<GameObject> spawnedCats = new List<GameObject>();
     public int numberOfCats = 10; // Number of cats to spawn
     public BoxCollider spawnArea;  // Reference to the patrol area
    
@@ -27,7 +27,8 @@ public class CatSpawner : MonoBehaviour
         Vector3 randomPosition = GetRandomPositionWithinBounds(bounds);
 
         // Spawn the cat at the random position
-        Instantiate(catPrefab, randomPosition, Quaternion.identity);
+        GameObject cat = Instantiate(catPrefab, randomPosition, Quaternion.identity);
+        spawnedCats.Add(cat);
     }
 }
 Vector3 GetRandomPositionWithinBounds(Bounds bounds)
@@ -39,5 +40,9 @@ Vector3 GetRandomPositionWithinBounds(Bounds bounds)
 
     return new Vector3(randomX, randomY, randomZ);
 }
+    public List<GameObject> GetSpawnedCats()
+    {
+        return spawnedCats;
+    }
 
 }
