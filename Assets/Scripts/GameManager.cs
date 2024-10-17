@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI finalScoreText; // Add this for displaying final score
 
+    public TextMeshProUGUI followingCatsText;  // UI element to show the number of following cats
+
     private int score;
     public float remainingTime = 60f;
     public Color normalColor = Color.green; // Color for normal time
@@ -37,6 +39,7 @@ public class GameManager : MonoBehaviour
         instructionPanel.SetActive(true); // Show the instruction panel initially
         scoreText.gameObject.SetActive(false); // Hide the score initially
         timerText.gameObject.SetActive(false); // Hide the timer initially
+        followingCatsText.gameObject.SetActive(false); // Hide the following cats text initially
 
         // Assign button listeners
         startButton.onClick.AddListener(StartGame);  // Add listener to the start button
@@ -90,6 +93,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Update the number of following cats in the UI
+    public void UpdateFollowingCatsText(int count)
+    {
+        if (followingCatsText != null)
+        {
+            followingCatsText.text = "Following Cats: " + count.ToString();
+        }
+    }
+
     // GameOver function to show the Game Over panel and freeze the game
     public void GameOver()
     {
@@ -112,6 +124,7 @@ public class GameManager : MonoBehaviour
         instructionPanel.SetActive(false); // Hide the instruction panel
         scoreText.gameObject.SetActive(true); // Show the score UI
         timerText.gameObject.SetActive(true); // Show the timer UI
+        followingCatsText.gameObject.SetActive(true); // Show the following cats text UI
 
         Time.timeScale = 1; // Unfreeze the game
 

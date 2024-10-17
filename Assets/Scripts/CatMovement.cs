@@ -23,6 +23,7 @@ public class CatMovement : MonoBehaviour
     public AudioSource audioSource;      // Assign your AudioSource in the Inspector
     public AudioClip[] catSounds;        // Array to hold different cat sound clips
     public float[] soundDelays;          // Array to hold delays for each sound
+    
 
     private void Start()
     {
