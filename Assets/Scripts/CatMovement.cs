@@ -17,7 +17,12 @@ public class CatMovement : MonoBehaviour
     // Follow related variables
     private bool isFollowing = false;   // To check if the cat is following the player
     private int followIndex = 0;        // To set the order of the following cats
-    public float followGap = .5f;      // Gap between the cats when following the player
+    public float followGap = .2f;      // Gap between the cats when following the player
+
+    // Audio variables
+    public AudioSource audioSource;      // Assign your AudioSource in the Inspector
+    public AudioClip[] catSounds;        // Array to hold different cat sound clips
+    public float[] soundDelays;          // Array to hold delays for each sound
 
     private void Start()
     {
@@ -25,6 +30,10 @@ public class CatMovement : MonoBehaviour
         player = GameObject.Find("Player");
         SetNewTargetPosition();
         timer = changeDirectionTime; // Initialize the timer
+        
+        // Start playing sounds with delays
+        StartCoroutine(PlaySoundsWithDelays());
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -46,7 +55,7 @@ public class CatMovement : MonoBehaviour
         {
             FollowPlayer();
         }
-        
+
         CheckForCatPickup();
     }
 
@@ -87,7 +96,7 @@ public class CatMovement : MonoBehaviour
     void CheckForCatPickup()
     {
         // Check the distance between the player and the cat
-        if((player.gameObject.transform.position - gameObject.transform.position).magnitude < 1)
+        if ((player.gameObject.transform.position - gameObject.transform.position).magnitude < 1 && !isFollowing)
         {
             // Highlight the cat if it's within pickup range
             gameObject.GetComponent<Outline>().enabled = true;
@@ -118,6 +127,20 @@ public class CatMovement : MonoBehaviour
 
             // Rotate to face the same direction as the player
             transform.rotation = Quaternion.Slerp(transform.rotation, player.transform.rotation, rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    // Coroutine to play sounds with delays
+    private IEnumerator PlaySoundsWithDelays()
+    {
+        for (int i = 0; i < catSounds.Length; i++)
+        {
+            // Wait for the specified delay
+            yield return new WaitForSeconds(soundDelays[i]);
+
+            // Play the sound
+            audioSource.clip = catSounds[i];
+            audioSource.Play();
         }
     }
 }

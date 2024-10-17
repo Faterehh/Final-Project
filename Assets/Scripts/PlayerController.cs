@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 3f;         // Speed of player movement
     public float lookSensitivity = 1f;   // Sensitivity of mouse look
     public float LookX = 50f;            // Rotation upwards and downwards
-    public float pickUpRange = 5f;
+    public float pickUpRange = 1f;
 
     private float rotX;                  // Current X rotation (up/down)
     private CharacterController characterController; // Reference to CharacterController
@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private Animator playerAnim;         // Reference to the animator
 
     private List<CatMovement> followingCats = new List<CatMovement>(); // List of cats that are following the player
-    public ScoreManager scoreManager;    // Reference to ScoreManager
+    public GameManager gameManager ;    // Reference to gameManager
 
     void Start()
     {
@@ -25,10 +25,8 @@ public class PlayerController : MonoBehaviour
         playerAnim.SetFloat("MoveSpeed", 0);
 
         // Get the player's camera (it should be a child of the player)
-        playerCamera = Camera.main;
-
-        // Lock the cursor to the center of the screen and hide it
-        Cursor.lockState = CursorLockMode.Locked;
+        playerCamera = Camera.main;   
+             
     }
 
     void Update()
@@ -104,10 +102,12 @@ public class PlayerController : MonoBehaviour
             followingCats.Clear(); // Clear the list of following cats
 
             // Update the score based on how many cats disappeared
-            if (scoreManager != null)
+            if (gameManager != null)
             {
-                scoreManager.AddScore(catsDisappeared);
+                gameManager.AddScore(catsDisappeared);
+                
             }
+
         }
     }
 }
