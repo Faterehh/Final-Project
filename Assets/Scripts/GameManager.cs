@@ -14,9 +14,9 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI followingCatsText;  // UI element to show the number of following cats
 
     private int score;
-    public float remainingTime = 60f;
+    public TextMeshProUGUI highScoreText;
+    public float remainingTime = 90f;
     public Color normalColor = Color.green; // Color for normal time
-    public Color warningColor = Color.yellow; // Color for the last 10 seconds
     public Color gameOverColor = Color.red; // Color when time is up
 
     // Add the Game Over Panel and Restart Button references
@@ -26,16 +26,25 @@ public class GameManager : MonoBehaviour
     // Add Instruction Panel and Start Button references
     public GameObject instructionPanel;  // Instruction panel with start button
     public Button startButton;  // Start button
+    public Image compess;
 
     private bool isGameOver = false; // Flag to check if the game is over
     private bool isGameStarted = false; // Flag to check if the game has started
+    
+    private bool catsInFastSpeed = false;
 
+    public GameObject plane; // Add this line to reference the plane
+
+    public AudioSource audioSource; // Reference to the AudioSource component
+    public AudioClip lightOffSound; // Reference to the sound effect
+    
     // Start is called before the first frame update
     void Start()
     {
         UpdateScoreText();
         timerText.color = normalColor; // Set initial color
         gameOverPanel.SetActive(false); // Make sure the Game Over panel is hidden initially
+        compess.gameObject.SetActive(false);
         instructionPanel.SetActive(true); // Show the instruction panel initially
         scoreText.gameObject.SetActive(false); // Hide the score initially
         timerText.gameObject.SetActive(false); // Hide the timer initially
@@ -58,6 +67,15 @@ public class GameManager : MonoBehaviour
         if (isGameOver || !isGameStarted) return; // If the game is over or hasn't started, skip the rest of the Update
 
         remainingTime -= Time.deltaTime;
+        if(!catsInFastSpeed && remainingTime < 30)
+        {
+            catsInFastSpeed = true;
+            CatMovement[] catList = FindObjectsOfType<CatMovement>();
+            foreach (CatMovement cat in catList)
+            {
+                cat.moveSpeed += 3f; // Increment move speed based on deltaTime
+            }
+        }
 
         if (remainingTime > 10)
         {
@@ -67,7 +85,7 @@ public class GameManager : MonoBehaviour
         else if (remainingTime >= 0) // Between 0 and 10 seconds
         {
             timerText.text = "Time: " + remainingTime.ToString("F1");
-            timerText.color = warningColor; // Change color to warning
+            timerText.color = gameOverColor; // Change color to warning
         }
         else // When time is up
         {
@@ -75,6 +93,42 @@ public class GameManager : MonoBehaviour
             timerText.text = "Time: 0"; // Final display
             timerText.color = gameOverColor; // Change color to red
             GameOver(); // Call the GameOver function
+        }
+
+        // Start blinking the plane at 25 seconds
+        if (remainingTime <= 35f && remainingTime > 34f) // Check if game time is 25 seconds
+        {
+            StartCoroutine(BlinkPlane());
+        }
+    }
+
+private IEnumerator BlinkPlane()
+{
+    // Blink for 12 seconds
+    float blinkDuration = 12f;
+    float blinkInterval = 1f;
+    
+    // Play the sound effect when turning off the plane
+    PlayLightOffSound(); 
+
+    for (float t = 0; t < blinkDuration; t += blinkInterval)
+    {
+        // Enable and disable the plane
+        plane.SetActive(!plane.activeSelf);
+        yield return new WaitForSeconds(blinkInterval);
+    }
+
+    // Disable the plane after blinking
+    plane.SetActive(false);
+    audioSource.Stop();
+    
+    }
+
+    private void PlayLightOffSound()
+    {
+        if (audioSource != null && lightOffSound != null)
+        {
+            audioSource.PlayOneShot(lightOffSound); // Play the sound effect
         }
     }
 
@@ -107,8 +161,17 @@ public class GameManager : MonoBehaviour
     {
         isGameOver = true; // Set game over flag
         gameOverPanel.SetActive(true); // Show the Game Over panel
-        finalScoreText.text = "Final Score: " + score.ToString(); // Display final score
+        finalScoreText.text = "Score: " + score.ToString(); // Display final score
         finalScoreText.gameObject.SetActive(true); // Make sure final score text is visible
+        int highscore = PlayerPrefs.GetInt("highscore");
+      if (score > highscore)
+      {
+         highscore = score;
+         PlayerPrefs.SetInt("highscore", highscore);
+         PlayerPrefs.Save();
+      }
+        highScoreText.text = "Highscore: " + highscore.ToString();
+
 
         Time.timeScale = 0; // Freeze the game when it's over
 
@@ -125,6 +188,7 @@ public class GameManager : MonoBehaviour
         scoreText.gameObject.SetActive(true); // Show the score UI
         timerText.gameObject.SetActive(true); // Show the timer UI
         followingCatsText.gameObject.SetActive(true); // Show the following cats text UI
+        compess.gameObject.SetActive(true);
 
         Time.timeScale = 1; // Unfreeze the game
 

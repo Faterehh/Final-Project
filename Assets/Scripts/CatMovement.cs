@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class CatMovement : MonoBehaviour
 {
-    public float moveSpeed = 2f;       // Speed at which the cat moves
+    public float moveSpeed = 3f;       // Speed at which the cat moves
     public float patrolRange = 5f;     // Distance within which the cat will roam
     public float changeDirectionTime = 2f; // Time interval to change direction
     public float rotationSpeed = 5f;   // Speed at which the cat rotates
@@ -22,7 +21,6 @@ public class CatMovement : MonoBehaviour
     // Audio variables
     public AudioSource audioSource;      // Assign your AudioSource in the Inspector
     public AudioClip[] catSounds;        // Array to hold different cat sound clips
-    public float[] soundDelays;          // Array to hold delays for each sound
     
 
     private void Start()
@@ -134,14 +132,14 @@ public class CatMovement : MonoBehaviour
     // Coroutine to play sounds with delays
     private IEnumerator PlaySoundsWithDelays()
     {
-        for (int i = 0; i < catSounds.Length; i++)
-        {
-            // Wait for the specified delay
-            yield return new WaitForSeconds(soundDelays[i]);
+    for (int i = 0; i < catSounds.Length; i++)
+    {
+        // Play the sound
+        audioSource.clip = catSounds[i];
+        audioSource.Play();
 
-            // Play the sound
-            audioSource.clip = catSounds[i];
-            audioSource.Play();
-        }
+        // Wait for 1 second before playing the next sound
+        yield return new WaitForSeconds(0f); // Fixed delay of 1 second
+    }
     }
 }

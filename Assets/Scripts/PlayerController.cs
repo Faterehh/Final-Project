@@ -15,20 +15,21 @@ public class PlayerController : MonoBehaviour
     private Animator playerAnim;         // Reference to the animator
 
     private List<CatMovement> followingCats = new List<CatMovement>(); // List of cats that are following the player
-    public GameManager gameManager;      // Reference to gameManager
+    public GameManager gameManager ;    // Reference to gameManager
     public ParticleSystem destroyingParticle;
-
-    public BoxCollider homeCollider;     // Reference to the box collider of the home
-
+    public AudioSource doorAudioSource; // Reference to the AudioSource component
+    public AudioClip doorSound; // Reference to the sound effect
+  
     void Start()
     {
         // Get the CharacterController component
         characterController = GetComponent<CharacterController>();
         playerAnim = GetComponent<Animator>();
         playerAnim.SetFloat("MoveSpeed", 0);
-
+        doorAudioSource = GetComponent<AudioSource>();
         // Get the player's camera (it should be a child of the player)
-        playerCamera = Camera.main;
+        playerCamera = Camera.main;   
+             
     }
 
     void Update()
@@ -53,9 +54,6 @@ public class PlayerController : MonoBehaviour
         {
             playerAnim.SetFloat("MoveSpeed", 0);  // Stop movement animation
         }
-
-        // Call the method to restrict the camera's position
-        RestrictCameraPosition();
     }
 
     void CameraLook()
@@ -69,24 +67,6 @@ public class PlayerController : MonoBehaviour
         rotX = Mathf.Clamp(rotX, -LookX, LookX);  // Clamp rotation to prevent over-rotating
 
         playerCamera.transform.localRotation = Quaternion.Euler(rotX, 0f, 0f);
-    }
-
-    // Restrict the camera's position within the bounds of the home
-    void RestrictCameraPosition()
-    {
-        if (homeCollider != null)
-        {
-            // Get the bounds of the home
-            Bounds bounds = homeCollider.bounds;
-
-            // Clamp the camera's position
-            float clampedX = Mathf.Clamp(playerCamera.transform.position.x, bounds.min.x, bounds.max.x);
-            float clampedY = Mathf.Clamp(playerCamera.transform.position.y, bounds.min.y, bounds.max.y);
-            float clampedZ = Mathf.Clamp(playerCamera.transform.position.z, bounds.min.z, bounds.max.z);
-
-            // Set the camera's position to the clamped values
-            playerCamera.transform.position = new Vector3(clampedX, clampedY, clampedZ);
-        }
     }
 
     // Handle cat pickup and follow behavior
@@ -119,7 +99,10 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("GardenDoor") && followingCats.Count > 0)
+        {   if (doorSound != null)
         {
+            doorAudioSource.PlayOneShot(doorSound); // Play the sound effect
+        }
             // Play the particle effect at the door when the player has following cats
             if (destroyingParticle != null)
             {
@@ -133,6 +116,7 @@ public class PlayerController : MonoBehaviour
             foreach (CatMovement cat in followingCats)
             {
                 Destroy(cat.gameObject);
+                
             }
 
             followingCats.Clear();
