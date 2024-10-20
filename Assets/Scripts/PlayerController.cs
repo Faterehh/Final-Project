@@ -8,18 +8,17 @@ public class PlayerController : MonoBehaviour
     public float lookSensitivity = 1f;   // Sensitivity of mouse look
     public float LookX = 50f;            // Rotation upwards and downwards
     public float pickUpRange = 1f;
-
     private float rotX;                  // Current X rotation (up/down)
     private CharacterController characterController; // Reference to CharacterController
     private Camera playerCamera;         // Reference to the camera
     private Animator playerAnim;         // Reference to the animator
-
     private List<CatMovement> followingCats = new List<CatMovement>(); // List of cats that are following the player
-    public GameManager gameManager ;    // Reference to gameManager
+    public GameManager gameManager;    // Reference to gameManager
     public ParticleSystem destroyingParticle;
     public AudioSource doorAudioSource; // Reference to the AudioSource component
     public AudioClip doorSound; // Reference to the sound effect
-  
+    Vector3 playerPosition; //palyer position
+
     void Start()
     {
         // Get the CharacterController component
@@ -28,8 +27,9 @@ public class PlayerController : MonoBehaviour
         playerAnim.SetFloat("MoveSpeed", 0);
         doorAudioSource = GetComponent<AudioSource>();
         // Get the player's camera (it should be a child of the player)
-        playerCamera = Camera.main;   
-             
+        playerCamera = Camera.main;
+        playerPosition = transform.position;
+
     }
 
     void Update()
@@ -37,6 +37,8 @@ public class PlayerController : MonoBehaviour
         Move();         // Handle player movement
         CameraLook();   // Handle mouse camera rotation
         HandleCatPickup(); // Handle the pickup of cats when pressing space
+        playerPosition.y = 6.95f;
+        transform.position = playerPosition;
     }
 
     void Move()
@@ -99,10 +101,11 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("GardenDoor") && followingCats.Count > 0)
-        {   if (doorSound != null)
         {
-            doorAudioSource.PlayOneShot(doorSound); // Play the sound effect
-        }
+            if (doorSound != null)
+            {
+                doorAudioSource.PlayOneShot(doorSound); // Play the sound effect
+            }
             // Play the particle effect at the door when the player has following cats
             if (destroyingParticle != null)
             {
@@ -116,7 +119,7 @@ public class PlayerController : MonoBehaviour
             foreach (CatMovement cat in followingCats)
             {
                 Destroy(cat.gameObject);
-                
+
             }
 
             followingCats.Clear();
@@ -127,6 +130,9 @@ public class PlayerController : MonoBehaviour
                 gameManager.AddScore(catsDisappeared);
                 gameManager.UpdateFollowingCatsText(followingCats.Count);  // This will now show "0"
             }
+
         }
+        playerPosition.y = 6.95f;
+        transform.position = playerPosition;
     }
 }
