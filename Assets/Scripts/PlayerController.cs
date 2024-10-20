@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
         playerAnim = GetComponent<Animator>();
         playerAnim.SetFloat("MoveSpeed", 0);
         doorAudioSource = GetComponent<AudioSource>();
-        // Get the player's camera (it should be a child of the player)
+        // Get the player's camera
         playerCamera = Camera.main;
         playerPosition = transform.position;
 

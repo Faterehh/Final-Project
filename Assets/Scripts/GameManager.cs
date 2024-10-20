@@ -50,9 +50,6 @@ public class GameManager : MonoBehaviour
         timerText.gameObject.SetActive(false); // Hide the timer initially
         followingCatsText.gameObject.SetActive(false); // Hide the following cats text initially
 
-        // Assign button listeners
-        startButton.onClick.AddListener(StartGame);  // Add listener to the start button
-        restartButton.onClick.AddListener(RestartGame); // Add listener to the restart button
 
         Time.timeScale = 0; // Pause the game initially
 

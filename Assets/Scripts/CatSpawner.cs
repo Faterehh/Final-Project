@@ -45,7 +45,7 @@ public class CatSpawner : MonoBehaviour
     {
         // Generate random x, y, and z coordinates within the bounds of the BoxCollider
         float randomX = Random.Range(bounds.min.x, bounds.max.x);
-        float randomY = bounds.min.y; // Set y to the ground or fixed height (e.g., 7)
+        float randomY = bounds.min.y; // Set y to the ground or fixed height (e.g., 6.95)
         float randomZ = Random.Range(bounds.min.z, bounds.max.z);
 
         return new Vector3(randomX, randomY, randomZ);

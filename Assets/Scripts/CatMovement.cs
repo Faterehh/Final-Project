@@ -31,7 +31,7 @@ public class CatMovement : MonoBehaviour
         timer = changeDirectionTime; // Initialize the timer
         
         // Start playing sounds with delays
-        StartCoroutine(PlaySoundsWithDelays());
+        StartCoroutine(PlaySounds());
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -130,7 +130,7 @@ public class CatMovement : MonoBehaviour
     }
 
     // Coroutine to play sounds with delays
-    private IEnumerator PlaySoundsWithDelays()
+    private IEnumerator PlaySounds()
     {
     for (int i = 0; i < catSounds.Length; i++)
     {
@@ -139,7 +139,7 @@ public class CatMovement : MonoBehaviour
         audioSource.Play();
 
         // Wait for 1 second before playing the next sound
-        yield return new WaitForSeconds(0f); // Fixed delay of 1 second
+        yield return new WaitForSeconds(0f); // Fixed delay of 0 second
     }
     }
 }
